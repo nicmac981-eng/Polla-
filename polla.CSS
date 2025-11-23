@@ -1,0 +1,42 @@
+h1 {
+    color: red;
+    font-size: 40px;
+}
+
+body {
+    background-color: rgb(124, 124, 124);
+}
+.botones-navegacion {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.botones-navegacion button {
+    font-size: 22px;          /* Tamaño del texto */
+    padding: 15px 170px;       /* Tamaño del botón */    /* Bordes redondeados */
+    background-color: #040404;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.25s;
+}
+
+.botones-navegacion button:hover {
+    background-color: #0056b3;
+    transform: scale(1.08);
+}
+.fullscreen-image {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* separa la imagen de los botones */
+}
+
+.fullscreen-image img {
+    width: 100vw;       /* ocupa TODO el ancho de la pantalla */
+    height: 94vh;       /* ocupa casi TODO el alto */
+    object-fit: cover;  /* NO SE DISTORSIONA, se recorta si hace falta */
+    display: block;
+}
