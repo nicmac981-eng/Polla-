@@ -1,0 +1,87 @@
+h1 {
+    color: red;
+    font-size: 40px;
+}
+
+body {
+    background-color: rgb(124, 124, 124);
+    margin: 0;
+}
+
+/* CONTENEDOR DE BOTONES */
+.botones-navegacion {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;   /* permite que se acomoden en celular */
+}
+
+/* BOTONES */
+.botones-navegacion button {
+    font-size: 20px;
+    padding: 12px 40px;     /* tamaño normal adaptable */
+    background-color: #040404;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: 0.25s;
+}
+
+.botones-navegacion button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* IMAGEN FULLSCREEN */
+.fullscreen-image {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.fullscreen-image img {
+    width: 100%;
+    height: auto;
+    max-height: 90vh;
+    object-fit: cover;
+}
+
+
+@media (max-width: 600px) {
+    
+    .botones-navegacion {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .botones-navegacion button {
+        width: 90%;         /* botones casi del ancho completo */
+        padding: 15px;
+        font-size: 18px;
+    }
+
+    .fullscreen-image img {
+        height: auto;
+        max-height: 60vh;  /* evita que tape todo en celular */
+    }
+}
+
+
+@media (min-width: 1200px) {
+    .botones-navegacion button {
+        padding: 15px 80px;
+        font-size: 22px;
+    }
+
+    .fullscreen-image img {
+        height: 90vh;
+    }
+}
+
+.fullscreen-image img {
+    width: 100vw;       /* ocupa TODO el ancho de la pantalla */
+    height: 94vh;       /* ocupa casi TODO el alto */
+    object-fit: cover;  /* NO SE DISTORSIONA, se recorta si hace falta */
+    display: block;
+}
