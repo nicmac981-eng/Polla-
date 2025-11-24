@@ -1,95 +1,86 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Formulario – Polla Copa América</title>
+<meta charset="UTF-8">
+<title>Polla Copa América</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 450px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        input, select, button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #0056b3;
-        }
-
-        #msg {
-            margin-top: 15px;
-            font-weight: bold;
-        }
-    </style>
+<style>
+body {
+  font-family: Arial;
+  background: #f2f2f2;
+  padding: 20px;
+}
+.container {
+  max-width: 450px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+}
+</style>
 </head>
+
 <body>
 
-    <div class="container">
-        <h2>Enviar Pronóstico</h2>
+<div class="container">
+<h2>Enviar Pronóstico</h2>
 
-        <form id="form">
-            <input type="text" id="correo" name="correo" placeholder="Iniciales de su(s) nombre(s) y apellidos (EN MAYUSCULA 🙏)" required>
-            <input type="text" id="partido" name="partido" placeholder="Partido (Ej: Colombia vs Brasil)" required>
-            <input type="number" id="golesA" name="golesA" placeholder="Goles equipo A" required>
-            <input type="number" id="golesB" name="golesB" placeholder="Goles equipo B" required>
+<form id="form">
+    <input type="email" id="correo" name="correo" placeholder="Correo" required>
 
-            <button type="submit">Enviar</button>
-        </form>
+    <select id="partido" name="partido" required>
+        <option value="">Seleccione un partido</option>
+        <option>Colombia vs Brasil</option>
+        <option>Argentina vs Chile</option>
+        <option>Perú vs Uruguay</option>
+        <option>México vs Ecuador</option>
+        <option>USA vs Panamá</option>
+        <option>Venezuela vs Jamaica</option>
+        <!-- puedes poner TODOS los partidos -->
+    </select>
 
-        <p id="msg"></p>
-    </div>
+    <input type="number" id="golesA" min="0" name="golesA" placeholder="Goles equipo A" required>
+    <input type="number" id="golesB" min="0" name="golesB" placeholder="Goles equipo B" required>
 
-    <script>
-        const URL = "https://script.google.com/macros/s/AKfycbzpe_FbZwRgqu0EtFGngM7aP6A2WqG7NDMEso6JDXexRSZxvCMZHTBrz-8C_L9Vm32D/exec";
+    <button type="submit">Enviar</button>
+</form>
 
-        const form = document.getElementById("form");
-        const msg = document.getElementById("msg");
+<p id="msg"></p>
+</div>
 
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            msg.innerHTML = "Enviando...";
+<script>
+const URL = "AQUÍ_VA_LA_URL_DEL_SCRIPT";
 
-            const data = new FormData(form);
+document.getElementById("form").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-            fetch(URL, {
-                method: "POST",
-                body: data
-            })
-            .then(res => res.text())
-            .then(text => {
-                msg.innerHTML = "✔ Pronóstico enviado correctamente";
-                form.reset();
-            })
-            .catch(err => {
-                console.error(err);
-                msg.innerHTML = "❌ Error al enviar. Revisa la consola.";
-            });
+    const msg = document.getElementById("msg");
+    msg.innerHTML = "Enviando...";
+
+    const data = new FormData(this);
+
+    fetch(URL, { method: "POST", body: data })
+        .then(r => r.text())
+        .then(t => {
+            msg.innerHTML = "✔ Pronóstico enviado";
+            this.reset();
+        })
+        .catch(err => {
+            msg.innerHTML = "❌ Error al enviar";
+            console.log(err);
         });
-    </script>
+});
+</script>
 
 </body>
 </html>
