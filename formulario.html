@@ -11,9 +11,12 @@
 </head>
 <body>
 
+<script>
+const API_URL = https://script.google.com/macros/s/AKfycbxG-7fb_ng8kcaN_rJvLcdJXAVyAWdtMZc1ycTOmKC1OX156rnMeDkLfBuTLwaYulkz/exec
+</script>
+
 <h1>Polla — Registro de Pronósticos</h1>
 
-<!-- FORMULARIO PARA PARTICIPANTES -->
 <div class="card">
     <h2>Pronóstico del participante</h2>
 
@@ -30,30 +33,23 @@
 </div>
 
 
-<!-- LOGIN DEL HOST -->
+<!-- LOGIN HOST -->
 <div class="card">
     <h2>Acceso Host</h2>
-
-    <label>Contraseña del Host:</label>
-    <input type="password" id="claveHost"><br><br>
-
+    <input type="password" id="claveHost" placeholder="Contraseña"><br><br>
     <button onclick="verificarHost()">Ingresar</button>
-
     <p id="hostError" style="color:red; display:none;">Contraseña incorrecta</p>
 </div>
 
 
-<!-- PANEL DEL HOST -->
-<div id="hostPanel">
+<!-- PANEL HOST -->
+<div id="hostPanel" style="display:none;">
     <div class="card">
-        <h2>Resultados del Host (SOLO HOST)</h2>
-
-        <label>Goles reales Equipo A:</label>
+        <h2>Resultados reales</h2>
+        <label>Goles reales A:</label>
         <input type="number" id="rA"><br><br>
-
-        <label>Goles reales Equipo B:</label>
+        <label>Goles reales B:</label>
         <input type="number" id="rB"><br><br>
-
         <button onclick="calcular()">Calcular puntajes</button>
     </div>
 
@@ -70,33 +66,28 @@
 
 <script>
 // ------------------------
-// GUARDAR PRONÓSTICOS
+// GUARDAR EN GOOGLE SHEETS
 // ------------------------
 function guardarPronostico() {
     let nombre = document.getElementById("nombre").value;
-    let gA = Number(document.getElementById("gA").value);
-    let gB = Number(document.getElementById("gB").value);
+    let gA = document.getElementById("gA").value;
+    let gB = document.getElementById("gB").value;
 
-    if(!nombre) { alert("Falta el nombre"); return; }
-
-    let lista = JSON.parse(localStorage.getItem("pronosticos") || "[]");
-    lista.push({ nombre, gA, gB });
-    localStorage.setItem("pronosticos", JSON.stringify(lista));
-
-    alert("Pronóstico guardado");
+    fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ nombre, gA, gB })
+    })
+    .then(r => r.text())
+    .then(() => alert("Pronóstico guardado correctamente"));
 }
 
-
-
 // ------------------------
-// VERIFICAR HOST
+// LOGIN DEL HOST
 // ------------------------
-const CLAVE_CORRECTA = "admin123"; // <---- CAMBIA ESTA CLAVE
+const CLAVE_CORRECTA = "admin123";
 
 function verificarHost() {
-    let clave = document.getElementById("claveHost").value;
-
-    if (clave === CLAVE_CORRECTA) {
+    if (document.getElementById("claveHost").value === CLAVE_CORRECTA) {
         document.getElementById("hostPanel").style.display = "block";
         document.getElementById("hostError").style.display = "none";
     } else {
@@ -104,16 +95,24 @@ function verificarHost() {
     }
 }
 
-
+// ------------------------
+// LEER PRONÓSTICOS
+// ------------------------
+async function leerPronosticos() {
+    let res = await fetch(API_URL);
+    let data = await res.json();
+    data.shift(); // quitar encabezado
+    return data;
+}
 
 // ------------------------
 // CALCULAR PUNTOS
 // ------------------------
-function calcular() {
+async function calcular() {
+    let pronosticos = await leerPronosticos();
+
     let rA = Number(document.getElementById("rA").value);
     let rB = Number(document.getElementById("rB").value);
-
-    let lista = JSON.parse(localStorage.getItem("pronosticos") || "[]");
 
     let tabla = document.getElementById("tabla");
     tabla.innerHTML = `
@@ -124,23 +123,23 @@ function calcular() {
         </tr>
     `;
 
-    lista.forEach(p => {
-        let puntos = 0;
+    pronosticos.forEach(p => {
+        let [nombre, gA, gB] = p;
+        gA = Number(gA);
+        gB = Number(gB);
 
-        if (p.gA === rA && p.gB === rB) {
-            puntos = 2;
-        } else if (
-            (p.gA > p.gB && rA > rB) ||
-            (p.gA < p.gB && rA < rB) ||
-            (p.gA === p.gB && rA === rB)
-        ) {
-            puntos = 1;
-        }
+        let puntos = 0;
+        if (gA === rA && gB === rB) puntos = 2;
+        else if (
+            (gA > gB && rA > rB) ||
+            (gA < gB && rA < rB) ||
+            (gA === gB && rA === rB)
+        ) puntos = 1;
 
         tabla.innerHTML += `
             <tr>
-                <td>${p.nombre}</td>
-                <td>${p.gA} - ${p.gB}</td>
+                <td>${nombre}</td>
+                <td>${gA} - ${gB}</td>
                 <td>${puntos}</td>
             </tr>
         `;
