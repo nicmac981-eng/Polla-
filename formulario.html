@@ -1,151 +1,95 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Polla — Pronósticos</title>
-<style>
-    body { font-family: Arial; background:#f2f2f2; padding:20px; }
-    .card { background:white; padding:20px; border-radius:10px; margin-bottom:20px; box-shadow:0 0 6px #ccc; }
-    #hostPanel { display:none; }
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formulario – Polla Copa América</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #msg {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-<script>
-const API_URL = https://script.google.com/macros/s/AKfycbxG-7fb_ng8kcaN_rJvLcdJXAVyAWdtMZc1ycTOmKC1OX156rnMeDkLfBuTLwaYulkz/exec
-</script>
+    <div class="container">
+        <h2>Enviar Pronóstico</h2>
 
-<h1>Polla — Registro de Pronósticos</h1>
+        <form id="form">
+            <input type="text" id="correo" name="correo" placeholder="Correo registrado" required>
+            <input type="text" id="partido" name="partido" placeholder="Partido (Ej: Colombia vs Brasil)" required>
+            <input type="number" id="golesA" name="golesA" placeholder="Goles equipo A" required>
+            <input type="number" id="golesB" name="golesB" placeholder="Goles equipo B" required>
 
-<div class="card">
-    <h2>Pronóstico del participante</h2>
+            <button type="submit">Enviar</button>
+        </form>
 
-    <label>Nombre:</label>
-    <input type="text" id="nombre"><br><br>
-
-    <label>Goles Equipo A:</label>
-    <input type="number" id="gA"><br><br>
-
-    <label>Goles Equipo B:</label>
-    <input type="number" id="gB"><br><br>
-
-    <button onclick="guardarPronostico()">Enviar pronóstico</button>
-</div>
-
-
-<!-- LOGIN HOST -->
-<div class="card">
-    <h2>Acceso Host</h2>
-    <input type="password" id="claveHost" placeholder="Contraseña"><br><br>
-    <button onclick="verificarHost()">Ingresar</button>
-    <p id="hostError" style="color:red; display:none;">Contraseña incorrecta</p>
-</div>
-
-
-<!-- PANEL HOST -->
-<div id="hostPanel" style="display:none;">
-    <div class="card">
-        <h2>Resultados reales</h2>
-        <label>Goles reales A:</label>
-        <input type="number" id="rA"><br><br>
-        <label>Goles reales B:</label>
-        <input type="number" id="rB"><br><br>
-        <button onclick="calcular()">Calcular puntajes</button>
+        <p id="msg"></p>
     </div>
 
-    <h2>Tabla de Resultados</h2>
-    <table border="1" cellpadding="8" id="tabla">
-        <tr>
-            <th>Participante</th>
-            <th>Pronóstico</th>
-            <th>Puntos</th>
-        </tr>
-    </table>
-</div>
+    <script>
+        const URL = "https://script.google.com/macros/s/AKfycbx43p_eK0SJB_5ol2ak7VjJ3LiK7C6aRpYkODwiWMpZp_EvoUUwWnEatqOA8070/exec";
 
+        const form = document.getElementById("form");
+        const msg = document.getElementById("msg");
 
-<script>
-// ------------------------
-// GUARDAR EN GOOGLE SHEETS
-// ------------------------
-function guardarPronostico() {
-    let nombre = document.getElementById("nombre").value;
-    let gA = document.getElementById("gA").value;
-    let gB = document.getElementById("gB").value;
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            msg.innerHTML = "Enviando...";
 
-    fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ nombre, gA, gB })
-    })
-    .then(r => r.text())
-    .then(() => alert("Pronóstico guardado correctamente"));
-}
+            const data = new FormData(form);
 
-// ------------------------
-// LOGIN DEL HOST
-// ------------------------
-const CLAVE_CORRECTA = "admin123";
-
-function verificarHost() {
-    if (document.getElementById("claveHost").value === CLAVE_CORRECTA) {
-        document.getElementById("hostPanel").style.display = "block";
-        document.getElementById("hostError").style.display = "none";
-    } else {
-        document.getElementById("hostError").style.display = "block";
-    }
-}
-
-// ------------------------
-// LEER PRONÓSTICOS
-// ------------------------
-async function leerPronosticos() {
-    let res = await fetch(API_URL);
-    let data = await res.json();
-    data.shift(); // quitar encabezado
-    return data;
-}
-
-// ------------------------
-// CALCULAR PUNTOS
-// ------------------------
-async function calcular() {
-    let pronosticos = await leerPronosticos();
-
-    let rA = Number(document.getElementById("rA").value);
-    let rB = Number(document.getElementById("rB").value);
-
-    let tabla = document.getElementById("tabla");
-    tabla.innerHTML = `
-        <tr>
-            <th>Participante</th>
-            <th>Pronóstico</th>
-            <th>Puntos</th>
-        </tr>
-    `;
-
-    pronosticos.forEach(p => {
-        let [nombre, gA, gB] = p;
-        gA = Number(gA);
-        gB = Number(gB);
-
-        let puntos = 0;
-        if (gA === rA && gB === rB) puntos = 2;
-        else if (
-            (gA > gB && rA > rB) ||
-            (gA < gB && rA < rB) ||
-            (gA === gB && rA === rB)
-        ) puntos = 1;
-
-        tabla.innerHTML += `
-            <tr>
-                <td>${nombre}</td>
-                <td>${gA} - ${gB}</td>
-                <td>${puntos}</td>
-            </tr>
-        `;
-    });
-}
-</script>
+            fetch(URL, {
+                method: "POST",
+                body: data
+            })
+            .then(res => res.text())
+            .then(text => {
+                msg.innerHTML = "✔ Pronóstico enviado correctamente";
+                form.reset();
+            })
+            .catch(err => {
+                console.error(err);
+                msg.innerHTML = "❌ Error al enviar. Revisa la consola.";
+            });
+        });
+    </script>
 
 </body>
 </html>
