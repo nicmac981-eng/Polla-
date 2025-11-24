@@ -36,8 +36,14 @@ button {
 <h2>Enviar Pronóstico</h2>
 
 <form id="form">
-    <input type="text" id="iniciales" name="iniciales" placeholder="iniciales de su(s) nombre(s) y apellidos " >
-</form>
+
+    <input 
+        type="text" 
+        id="iniciales" 
+        name="iniciales" 
+        placeholder="INICIALES EN MAYÚSCULA"
+        required
+    >
 
     <select id="partido" name="partido" required>
         <option value="">Seleccione un partido</option>
@@ -47,13 +53,14 @@ button {
         <option>México vs Ecuador</option>
         <option>USA vs Panamá</option>
         <option>Venezuela vs Jamaica</option>
-        <!-- puedes poner TODOS los partidos -->
     </select>
 
     <input type="number" id="golesA" min="0" name="golesA" placeholder="Goles equipo A" required>
+
     <input type="number" id="golesB" min="0" name="golesB" placeholder="Goles equipo B" required>
 
     <button type="submit">Enviar</button>
+
 </form>
 
 <p id="msg"></p>
