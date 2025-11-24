@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Polla — Pronósticos</title>
+<style>
+    body { font-family: Arial; background:#f2f2f2; padding:20px; }
+    .card { background:white; padding:20px; border-radius:10px; margin-bottom:20px; box-shadow:0 0 6px #ccc; }
+</style>
+</head>
+<body>
+
+<h1>Polla — Registro de Pronósticos</h1>
+
+<div class="card">
+    <h2>Pronóstico del participante</h2>
+    <label>Nombre:</label>
+    <input type="text" id="nombre"><br><br>
+
+    <label>Goles Equipo A:</label>
+    <input type="number" id="gA"><br><br>
+
+    <label>Goles Equipo B:</label>
+    <input type="number" id="gB"><br><br>
+
+    <button onclick="guardarPronostico()">Enviar pronóstico</button>
+</div>
+
+<hr>
+
+<div class="card">
+    <h2>Resultados del Host</h2>
+    <label>Goles reales Equipo A:</label>
+    <input type="number" id="rA"><br><br>
+
+    <label>Goles reales Equipo B:</label>
+    <input type="number" id="rB"><br><br>
+
+    <button onclick="calcular()">Calcular puntajes</button>
+</div>
+
+<h2>Tabla de Resultados</h2>
+<table border="1" cellpadding="8" id="tabla">
+    <tr>
+        <th>Participante</th>
+        <th>Pronóstico</th>
+        <th>Puntos</th>
+    </tr>
+</table>
+
+<script>
+// Guarda pronósticos en localStorage
+function guardarPronostico() {
+    let nombre = document.getElementById("nombre").value;
+    let gA = Number(document.getElementById("gA").value);
+    let gB = Number(document.getElementById("gB").value);
+
+    if(!nombre) { alert("Falta el nombre"); return; }
+
+    let lista = JSON.parse(localStorage.getItem("pronosticos") || "[]");
+    lista.push({ nombre, gA, gB });
+    localStorage.setItem("pronosticos", JSON.stringify(lista));
+
+    alert("Pronóstico guardado");
+}
+
+// Calcula puntajes
+function calcular() {
+    let rA = Number(document.getElementById("rA").value);
+    let rB = Number(document.getElementById("rB").value);
+
+    let lista = JSON.parse(localStorage.getItem("pronosticos") || "[]");
+
+    let tabla = document.getElementById("tabla");
+    tabla.innerHTML = `
+        <tr>
+            <th>Participante</th>
+            <th>Pronóstico</th>
+            <th>Puntos</th>
+        </tr>
+    `;
+
+    lista.forEach(p => {
+        let puntos = 0;
+
+        // Marcador exacto
+        if (p.gA === rA && p.gB === rB) {
+            puntos = 2;
+        } 
+        // Solo acierta ganador
+        else if (
+            (p.gA > p.gB && rA > rB) ||
+            (p.gA < p.gB && rA < rB) ||
+            (p.gA === p.gB && rA === rB)
+        ) {
+            puntos = 1;
+        }
+
+        tabla.innerHTML += `
+            <tr>
+                <td>${p.nombre}</td>
+                <td>${p.gA} - ${p.gB}</td>
+                <td>${puntos}</td>
+            </tr>
+        `;
+    });
+}
+</script>
+
+</body>
+</html>
