@@ -18,51 +18,48 @@ button:hover { background: #0056b3; }
 <div class="container">
 <h2>Enviar Pronósticos</h2>
 
-<form id="form">
-  <input type="text" id="iniciales" placeholder="INICIALES EN MAYÚSCULA" required>
+<input type="text" id="iniciales" placeholder="INICIALES EN MAYÚSCULA" required>
 
-  <div class="match" data-partido="COL-BRA">
-    <strong>Colombia vs Brasil</strong>
-    <div class="score">
-      <input type="number" class="golA" min="0" placeholder="Colombia">
-      <input type="number" class="golB" min="0" placeholder="Brasil">
-    </div>
+<div class="match" data-partido="COL-BRA">
+  <strong>Colombia vs Brasil</strong>
+  <div class="score">
+    <input type="number" class="golA" min="0" placeholder="Colombia">
+    <input type="number" class="golB" min="0" placeholder="Brasil">
   </div>
+</div>
 
-  <div class="match" data-partido="ARG-CHI">
-    <strong>Argentina vs Chile</strong>
-    <div class="score">
-      <input type="number" class="golA" min="0" placeholder="Argentina">
-      <input type="number" class="golB" min="0" placeholder="Chile">
-    </div>
+<div class="match" data-partido="ARG-CHI">
+  <strong>Argentina vs Chile</strong>
+  <div class="score">
+    <input type="number" class="golA" min="0" placeholder="Argentina">
+    <input type="number" class="golB" min="0" placeholder="Chile">
   </div>
+</div>
 
-  <div class="match" data-partido="JAP-CRO">
-    <strong>Japón vs Croacia</strong>
-    <div class="score">
-      <input type="number" class="golA" min="0" placeholder="Japón">
-      <input type="number" class="golB" min="0" placeholder="Croacia">
-    </div>
+<div class="match" data-partido="JAP-CRO">
+  <strong>Japón vs Croacia</strong>
+  <div class="score">
+    <input type="number" class="golA" min="0" placeholder="Japón">
+    <input type="number" class="golB" min="0" placeholder="Croacia">
   </div>
+</div>
 
-  <div class="match" data-partido="ALE-BEL">
-    <strong>Alemania vs Bélgica</strong>
-    <div class="score">
-      <input type="number" class="golA" min="0" placeholder="Alemania">
-      <input type="number" class="golB" min="0" placeholder="Bélgica">
-    </div>
+<div class="match" data-partido="ALE-BEL">
+  <strong>Alemania vs Bélgica</strong>
+  <div class="score">
+    <input type="number" class="golA" min="0" placeholder="Alemania">
+    <input type="number" class="golB" min="0" placeholder="Bélgica">
   </div>
+</div>
 
-  <button type="button" id="btnEnviar" onclick="enviarTodo()">ENVIAR PRONÓSTICOS</button>
-</form>
+<button type="button" id="btnEnviar">ENVIAR PRONÓSTICOS</button>
 </div>
 
 <script>
-<script>
-async function enviarTodo() {
-  const btn = document.getElementById('btnEnviar');
-  const iniciales = document.getElementById('iniciales').value.trim();
-  const url = "https://script.google.com/macros/s/AKfycbwTLNCmISo2KyauM7LUUbQciYPSCIAkYGdj0jRwg_dW1W-3fY5WfCGdqLScq28oor3i/exec"; // <--- reemplaza aquí
+document.getElementById("btnEnviar").addEventListener("click", async () => {
+  const btn = document.getElementById("btnEnviar");
+  const iniciales = document.getElementById("iniciales").value.trim();
+  const url = "https://script.google.com/macros/s/AKfycbwMNHYB2pDEyLEmS1dH0IB8DkXqIldA9kmtMHqn6Q2xjbUEDfwCL-jcXC2eF-J3CQfu/exec"; // <--- Reemplaza aquí con tu URL
 
   if(!iniciales){
     alert("Pon tus iniciales");
@@ -72,22 +69,25 @@ async function enviarTodo() {
   btn.disabled = true;
   btn.innerText = "Enviando...";
 
-  // Recolectamos todos los partidos
-  const partidosNode = document.querySelectorAll('.match');
+  // Recolectar partidos
+  const partidosNode = document.querySelectorAll(".match");
   const partidos = [];
 
   partidosNode.forEach(p => {
     const partido = p.dataset.partido;
-    const golesA = p.querySelector('.golA').value || 0;
-    const golesB = p.querySelector('.golB').value || 0;
+    const golesA = p.querySelector(".golA").value || 0;
+    const golesB = p.querySelector(".golB").value || 0;
     partidos.push({ partido, golesA, golesB });
   });
 
   try {
+    const datos = new URLSearchParams();
+    datos.append("iniciales", iniciales);
+    datos.append("partidos", JSON.stringify(partidos));
+
     const res = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ iniciales, partidos })
+      body: datos
     });
 
     const text = await res.text();
@@ -96,7 +96,6 @@ async function enviarTodo() {
     } else {
       alert("Error al enviar: " + text);
     }
-
   } catch(err){
     console.error(err);
     alert("Error al enviar pronósticos: " + err.message);
@@ -104,7 +103,7 @@ async function enviarTodo() {
 
   btn.disabled = false;
   btn.innerText = "ENVIAR PRONÓSTICOS";
-}
+});
 </script>
 
 </body>
