@@ -19,7 +19,6 @@ button:hover { background: #0056b3; }
 <h2>Enviar Pronósticos</h2>
 
 <form id="form">
-
   <input type="text" id="iniciales" placeholder="INICIALES EN MAYÚSCULA" required>
 
   <div class="match" data-partido="COL-BRA">
@@ -55,50 +54,56 @@ button:hover { background: #0056b3; }
   </div>
 
   <button type="button" id="btnEnviar" onclick="enviarTodo()">ENVIAR PRONÓSTICOS</button>
-
 </form>
 </div>
 
 <script>
 async function enviarTodo() {
   const btn = document.getElementById('btnEnviar');
-  const iniciales = document.getElementById('iniciales').value;
-  const url = "https://script.google.com/macros/s/AKfycbwTLNCmISo2KyauM7LUUbQciYPSCIAkYGdj0jRwg_dW1W-3fY5WfCGdqLScq28oor3i/exec"; // <--- Pon tu URL real aquí
+  const iniciales = document.getElementById('iniciales').value.trim();
+  const url = "https://script.google.com/macros/s/AKfycbwTLNCmISo2KyauM7LUUbQciYPSCIAkYGdj0jRwg_dW1W-3fY5WfCGdqLScq28oor3i/exec"; // <--- Reemplaza con tu URL
 
   if (!iniciales) {
     alert("Por favor, pon tus iniciales");
     return;
   }
 
-  btn.innerText = "Enviando todo...";
   btn.disabled = true;
+  btn.innerText = "Enviando...";
 
-  // Seleccionamos todos los contenedores de partidos
-  const partidos = document.querySelectorAll('.match');
+  // Recolectamos todos los partidos
+  const partidosNode = document.querySelectorAll('.match');
+  const partidos = [];
 
-  for (let p of partidos) {
-    const nombrePartido = p.querySelector('strong').innerText;
-    const golA = p.querySelector('.golA').value;
-    const golB = p.querySelector('.golB').value;
+  partidosNode.forEach(p => {
+    const partido = p.dataset.partido;
+    const golesA = p.querySelector('.golA').value || 0;
+    const golesB = p.querySelector('.golB').value || 0;
+    partidos.push({ partido, golesA, golesB });
+  });
 
-    // Solo enviamos si se llenaron los goles
-    if (golA !== "" && golB !== "") {
-      const datos = new URLSearchParams();
-      datos.append("iniciales", iniciales);
-      datos.append("partido", nombrePartido);
-      datos.append("golesA", golA);
-      datos.append("golesB", golB);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ iniciales, partidos })
+    });
 
-      // Usamos 'await' para que envíe uno por uno y no se crucen
-      await fetch(url, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: datos
-      });
+    const text = await res.text();
+    if (text === "OK") {
+      alert("¡Todos tus pronósticos se han guardado en la hoja: " + iniciales.toUpperCase() + "!");
+    } else {
+      alert("Error al enviar: " + text);
     }
+  } catch (err) {
+    console.error(err);
+    alert("Error al enviar pronósticos");
   }
 
-  alert("¡Todos tus pronósticos se han guardado en la hoja: " + iniciales.toUpperCase() + "!");
-  btn.innerText = "ENVIAR PRONÓSTICOS";
   btn.disabled = false;
+  btn.innerText = "ENVIAR PRONÓSTICOS";
 }
+</script>
+
+</body>
+</html>
