@@ -11,7 +11,7 @@ body {
   padding: 20px;
 }
 .container {
-  max-width: 450px;
+  max-width: 500px;
   margin: auto;
   background: white;
   padding: 20px;
@@ -24,10 +24,11 @@ body {
 .score {
   display: flex;
   gap: 10px;
+  margin-top: 5px;
 }
 input, button {
   width: 100%;
-  padding: 10px;
+  padding: 8px;
   margin-top: 5px;
 }
 button {
@@ -48,6 +49,7 @@ button {
 
   <input type="text" id="iniciales" placeholder="INICIALES EN MAYÚSCULA" required>
 
+  <!-- TODOS LOS PARTIDOS -->
   <div class="match" data-partido="COL-BRA">
     <strong>Colombia vs Brasil</strong>
     <div class="score">
@@ -58,95 +60,5 @@ button {
 
   <div class="match" data-partido="ARG-CHI">
     <strong>Argentina vs Chile</strong>
-    <div class="score">
-      <input type="number" class="golA" min="0" placeholder="Argentina">
-      <input type="number" class="golB" min="0" placeholder="Chile">
-    </div>
-  </div>
-
-  <div class="match" data-partido="PER-URU">
-    <strong>Perú vs Uruguay</strong>
-    <div class="score">
-      <input type="number" class="golA" min="0" placeholder="Perú">
-      <input type="number" class="golB" min="0" placeholder="Uruguay">
-    </div>
-  </div>
-
-  <div class="match" data-partido="MEX-ECU">
-    <strong>México vs Ecuador</strong>
-    <div class="score">
-      <input type="number" class="golA" min="0" placeholder="México">
-      <input type="number" class="golB" min="0" placeholder="Ecuador">
-    </div>
-  </div>
-
-  <div class="match" data-partido="USA-PAN">
-    <strong>USA vs Panamá</strong>
-    <div class="score">
-      <input type="number" class="golA" min="0" placeholder="USA">
-      <input type="number" class="golB" min="0" placeholder="Panamá">
-    </div>
-  </div>
-
-  <div class="match" data-partido="VEN-JAM">
-    <strong>Venezuela vs Jamaica</strong>
-    <div class="score">
-      <input type="number" class="golA" min="0" placeholder="Venezuela">
-      <input type="number" class="golB" min="0" placeholder="Jamaica">
-    </div>
-  </div>
-
-  <button type="submit">Enviar todos los pronósticos</button>
-</form>
-
-<p id="msg"></p>
-</div>
-
-<!-- ✅ JAVASCRIPT -->
-<script>
-const URL = "https://script.google.com/macros/s/AKfycbzC-J8VI8Okgc9xXeK0T-WxMvDeCgluJPm6Ej3Ru484Iux5gBTZVe__cwCcnJUcJLNF/exec";
-
-document.getElementById("form").addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  const msg = document.getElementById("msg");
-  msg.innerHTML = "Enviando...";
-
-  const iniciales = document.getElementById("iniciales").value.trim().toUpperCase();
-  const partidos = document.querySelectorAll(".match");
-
-  let datos = [];
-
-  partidos.forEach(p => {
-    const partido = p.dataset.partido;
-    const golA = p.querySelector(".golA").value;
-    const golB = p.querySelector(".golB").value;
-
-    if (golA !== "" && golB !== "") {
-      datos.push([iniciales, partido, Number(golA), Number(golB)]);
-    }
-  });
-
-  if (datos.length === 0) {
-    msg.innerHTML = "❌ Ingresa al menos un marcador";
-    return;
-  }
-
-  fetch(URL, {
-    method: "POST",
-    body: JSON.stringify(datos)
-  })
-  .then(r => r.text())
-  .then(() => {
-    msg.innerHTML = "✔ Pronósticos enviados";
-    document.getElementById("form").reset();
-  })
-  .catch(() => {
-    msg.innerHTML = "❌ Error al enviar";
-  });
-});
-</script>
-
-</body>
-</html>
+    <div class="sc
 
