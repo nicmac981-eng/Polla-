@@ -58,13 +58,14 @@ button:hover { background: #0056b3; }
 </div>
 
 <script>
+<script>
 async function enviarTodo() {
   const btn = document.getElementById('btnEnviar');
   const iniciales = document.getElementById('iniciales').value.trim();
-  const url = "https://script.google.com/macros/s/AKfycbwTLNCmISo2KyauM7LUUbQciYPSCIAkYGdj0jRwg_dW1W-3fY5WfCGdqLScq28oor3i/exec"; // <--- Reemplaza con tu URL
+  const url = "https://script.google.com/macros/s/AKfycbwTLNCmISo2KyauM7LUUbQciYPSCIAkYGdj0jRwg_dW1W-3fY5WfCGdqLScq28oor3i/exec"; // <--- reemplaza aquí
 
-  if (!iniciales) {
-    alert("Por favor, pon tus iniciales");
+  if(!iniciales){
+    alert("Pon tus iniciales");
     return;
   }
 
@@ -84,20 +85,21 @@ async function enviarTodo() {
 
   try {
     const res = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ iniciales, partidos })
     });
 
     const text = await res.text();
-    if (text === "OK") {
-      alert("¡Todos tus pronósticos se han guardado en la hoja: " + iniciales.toUpperCase() + "!");
+    if(text === "OK"){
+      alert("¡Pronósticos guardados en la hoja: " + iniciales.toUpperCase() + "!");
     } else {
       alert("Error al enviar: " + text);
     }
-  } catch (err) {
+
+  } catch(err){
     console.error(err);
-    alert("Error al enviar pronósticos");
+    alert("Error al enviar pronósticos: " + err.message);
   }
 
   btn.disabled = false;
