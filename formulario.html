@@ -60,52 +60,45 @@ button:hover { background: #0056b3; }
 </div>
 
 <script>
-function enviarTodo() {
+async function enviarTodo() {
   const btn = document.getElementById('btnEnviar');
-  const iniciales = document.getElementById('iniciales').value.trim();
+  const iniciales = document.getElementById('iniciales').value;
+  const url = "Thttps://script.google.com/macros/s/AKfycbwTLNCmISo2KyauM7LUUbQciYPSCIAkYGdj0jRwg_dW1W-3fY5WfCGdqLScq28oor3i/exec"; // <--- Pon tu URL real aquí
 
   if (!iniciales) {
-    alert("Por favor, pon tus iniciales.");
+    alert("Por favor, pon tus iniciales");
     return;
   }
 
+  btn.innerText = "Enviando todo...";
   btn.disabled = true;
-  btn.innerText = "Enviando...";
 
-  const url = "https://script.google.com/macros/s/AKfycbwZb00s73-6RdxBn7fpdVDujvs-lvZLKpknL0RTuG0LHsvnbkuFZ2Yh5AObz51KEHka/exec"; // Reemplaza con tu URL
+  // Seleccionamos todos los contenedores de partidos
+  const partidos = document.querySelectorAll('.match');
 
-  const matches = document.querySelectorAll('.match');
-  let promises = [];
+  for (let p of partidos) {
+    const nombrePartido = p.querySelector('strong').innerText;
+    const golA = p.querySelector('.golA').value;
+    const golB = p.querySelector('.golB').value;
 
-  matches.forEach(match => {
-    const partido = match.dataset.partido;
-    const golesA = match.querySelector('.golA').value || 0;
-    const golesB = match.querySelector('.golB').value || 0;
+    // Solo enviamos si se llenaron los goles
+    if (golA !== "" && golB !== "") {
+      const datos = new URLSearchParams();
+      datos.append("iniciales", iniciales);
+      datos.append("partido", nombrePartido);
+      datos.append("golesA", golA);
+      datos.append("golesB", golB);
 
-    const datos = { iniciales, partido, golesA, golesB };
+      // Usamos 'await' para que envíe uno por uno y no se crucen
+      await fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: datos
+      });
+    }
+  }
 
-    const p = fetch(url, {
-      method: 'POST',
-      body: new URLSearchParams(datos)
-    });
-
-    promises.push(p);
-  });
-
-  Promise.all(promises)
-    .then(() => {
-      alert("¡Todos los pronósticos enviados con éxito!");
-      btn.disabled = false;
-      btn.innerText = "ENVIAR PRONÓSTICOS";
-    })
-    .catch(err => {
-      console.error(err);
-      alert("Error al enviar.");
-      btn.disabled = false;
-      btn.innerText = "ENVIAR PRONÓSTICOS";
-    });
+  alert("¡Todos tus pronósticos se han guardado en la hoja: " + iniciales.toUpperCase() + "!");
+  btn.innerText = "ENVIAR PRONÓSTICOS";
+  btn.disabled = false;
 }
-</script>
-
-</body>
-</html>
