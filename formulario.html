@@ -36,6 +36,10 @@ button {
   color: white;
   border: none;
   margin-top: 15px;
+  cursor: pointer;
+}
+button:hover {
+  background: #0056b3;
 }
 </style>
 </head>
@@ -47,6 +51,7 @@ button {
 
 <form id="form">
 
+  <!-- Iniciales -->
   <input type="text" id="iniciales" placeholder="INICIALES EN MAYÚSCULA" required>
 
   <!-- TODOS LOS PARTIDOS -->
@@ -60,5 +65,7 @@ button {
 
   <div class="match" data-partido="ARG-CHI">
     <strong>Argentina vs Chile</strong>
-    <div class="sc
+    <div class="score">
+      <input type="number" class="golA" min="0" placeholder="Argentina">
+      <input type="number" class="golB"
 
