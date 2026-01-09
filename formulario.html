@@ -3,47 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <title>Polla Copa América</title>
-
 <style>
-body {
-  font-family: Arial;
-  background: #f2f2f2;
-  padding: 20px;
-}
-.container {
-  max-width: 500px;
-  margin: auto;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-}
-.match {
-  border-bottom: 1px solid #ddd;
-  padding: 10px 0;
-}
-.score {
-  display: flex;
-  gap: 10px;
-  margin-top: 5px;
-}
-input, button {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-}
-button {
-  background: #007bff;
-  color: white;
-  border: none;
-  margin-top: 15px;
-  cursor: pointer;
-}
-button:hover {
-  background: #0056b3;
-}
+body { font-family: Arial; background: #f2f2f2; padding: 20px; }
+.container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+.match { border-bottom: 1px solid #ddd; padding: 10px 0; }
+.score { display: flex; gap: 10px; margin-top: 5px; }
+input, button { width: 100%; padding: 8px; margin-top: 5px; }
+button { background: #007bff; color: white; border: none; margin-top: 15px; cursor: pointer; }
+button:hover { background: #0056b3; }
 </style>
 </head>
-
 <body>
 
 <div class="container">
@@ -51,10 +20,8 @@ button:hover {
 
 <form id="form">
 
-  <!-- Iniciales -->
   <input type="text" id="iniciales" placeholder="INICIALES EN MAYÚSCULA" required>
 
-  <!-- TODOS LOS PARTIDOS -->
   <div class="match" data-partido="COL-BRA">
     <strong>Colombia vs Brasil</strong>
     <div class="score">
@@ -63,7 +30,7 @@ button:hover {
     </div>
   </div>
 
-    <div class="match" data-partido="ARG-CHI">
+  <div class="match" data-partido="ARG-CHI">
     <strong>Argentina vs Chile</strong>
     <div class="score">
       <input type="number" class="golA" min="0" placeholder="Argentina">
@@ -71,62 +38,74 @@ button:hover {
     </div>
   </div>
 
-    <div class="match" data-partido="JAP-CRO">
-    <strong>Japon vs Croasia</strong>
+  <div class="match" data-partido="JAP-CRO">
+    <strong>Japón vs Croacia</strong>
     <div class="score">
-      <input type="number" class="golA" min="0" placeholder="Japon">
+      <input type="number" class="golA" min="0" placeholder="Japón">
       <input type="number" class="golB" min="0" placeholder="Croacia">
     </div>
   </div>
 
-    <div class="match" data-partido="ALE-BEL">
-    <strong>Alemania vs Belgica</strong>
+  <div class="match" data-partido="ALE-BEL">
+    <strong>Alemania vs Bélgica</strong>
     <div class="score">
       <input type="number" class="golA" min="0" placeholder="Alemania">
-      <input type="number" class="golB" min="0" placeholder="Belgica">
+      <input type="number" class="golB" min="0" placeholder="Bélgica">
     </div>
   </div>
 
   <button type="button" id="btnEnviar" onclick="enviarTodo()">ENVIAR PRONÓSTICOS</button>
-  </form>
+
+</form>
 </div>
 
 <script>
-  function enviarTodo() {
-    const btn = document.getElementById('btnEnviar');
-    const iniciales = document.getElementById('iniciales').value;
-    
-    if (!iniciales) {
-      alert("Por favor, pon tus iniciales.");
-      return;
-    }
+function enviarTodo() {
+  const btn = document.getElementById('btnEnviar');
+  const iniciales = document.getElementById('iniciales').value.trim();
 
-    btn.disabled = true;
-    btn.innerText = "Enviando...";
-
-    // URL de tu Apps Script (la que obtienes al Implementar)
-    const url = "https://script.google.com/macros/s/AKfycby_JOggwtNoiOFR8S7gar25tXhQ3ahRE91KKlkyz2rPk-Vxwv3Pcy_OVn5D9V-TERU/exec";
-
-    // Recolectamos los datos de los partidos
-    // Nota: Esto envía el primer partido como ejemplo. 
-    // Para enviar muchos, se suele usar un bucle.
-    const datos = {
-      iniciales: iniciales,
-      partido: "COL-BRA",
-      golesA: document.querySelector('.match[data-partido="COL-BRA"] .golA').value,
-      golesB: document.querySelector('.match[data-partido="COL-BRA"] .golB').value
-    };
-
-    fetch(url + "?" + new URLSearchParams(datos), { method: 'POST' })
-      .then(res => {
-        alert("¡Pronóstico enviado con éxito!");
-        btn.disabled = false;
-        btn.innerText = "ENVIAR PRONÓSTICOS";
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Error al enviar.");
-        btn.disabled = false;
-      });
+  if (!iniciales) {
+    alert("Por favor, pon tus iniciales.");
+    return;
   }
+
+  btn.disabled = true;
+  btn.innerText = "Enviando...";
+
+  const url = "https://script.google.com/macros/s/AKfycbwZb00s73-6RdxBn7fpdVDujvs-lvZLKpknL0RTuG0LHsvnbkuFZ2Yh5AObz51KEHka/exec"; // Reemplaza con tu URL
+
+  const matches = document.querySelectorAll('.match');
+  let promises = [];
+
+  matches.forEach(match => {
+    const partido = match.dataset.partido;
+    const golesA = match.querySelector('.golA').value || 0;
+    const golesB = match.querySelector('.golB').value || 0;
+
+    const datos = { iniciales, partido, golesA, golesB };
+
+    const p = fetch(url, {
+      method: 'POST',
+      body: new URLSearchParams(datos)
+    });
+
+    promises.push(p);
+  });
+
+  Promise.all(promises)
+    .then(() => {
+      alert("¡Todos los pronósticos enviados con éxito!");
+      btn.disabled = false;
+      btn.innerText = "ENVIAR PRONÓSTICOS";
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Error al enviar.");
+      btn.disabled = false;
+      btn.innerText = "ENVIAR PRONÓSTICOS";
+    });
+}
 </script>
+
+</body>
+</html>
